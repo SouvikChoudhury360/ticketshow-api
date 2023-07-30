@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+  	<!-- Bootstrap CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+	<!-- jQuery library -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<!-- Bootstrap JS -->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+	<style>
+		.my-div {
+			background-color: aliceblue;
+  			border-radius: 16px;
+  			border: 1px solid black;
+  			padding: 24px;
+  			display: flex;
+  			flex-direction: column;
+  			margin: 20px;
+		}
+		.my-text {
+			margin: 4px;
+		}
+
+		.row {
+  			display: flex;
+  			justify-content: space-between;
+		}
+		header{
+			text-align:center;
+		}
+
+		body{
+			text-align: center;
+			background-color: #f6f7ff;
+		}
+		.my-2{
+			margin-right: 12px;
+		}
+	</style>
+	<title>Search Shows</title>
+</head>
+<body>
+	<nav class="navbar navbar-light" style="background-color: #e3f2fd;">
+	<h1 class="navbar-brand">Search Shows</h1>
+  		<form method="POST" action="/search/shows" class="form-inline my-2 my-lg-0">
+    		<div class="form-group">
+    		<label for="show_search" class="my-2">Search for shows by name or tags (Thriller / Action /..etc)</label>
+    		<input type="text" class="form-control my-2" name="show_search" class="form-control" placeholder="Search">
+    		<button type="submit" class="btn btn-primary">Search</button>
+  			</div>
+  		</form>
+	</nav>
+	{% for show in shows %}
+	<div class="my-div">
+		<div class="row">
+			<div class="my-text">{{ show.title }}</div>
+			<div class="my-text">{{ show.starting_time }} to {{ show.ending_time }}</div>
+			<div class="my-text">Seats Left: {{ show.capacity }}</div>
+	  	</div>
+      <div class="row">
+        <div class="my-text">Ticket price: ₹{{ show.ticket_price }}</div>
+        <div class="my-text"><a href="{{ url_for('main.booking_get', show_id=show.id) }}" class="btn btn-outline-primary">Book</a></div>
+        <div class="my-text">{{ show.tags }}</div>
+        </div>
+	</div>
+	{% endfor %}
+</body>
+</html>
