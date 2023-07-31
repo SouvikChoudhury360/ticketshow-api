@@ -23,7 +23,6 @@ def logged_user():
 
 # ALL VENUES AND SHOWS LIST
 @main.route('/shows')
-@login_required
 def get_shows():
     venues_db = venue.query.all()
     venues = []
