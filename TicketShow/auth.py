@@ -16,7 +16,7 @@ def login_post():
 
     user = User.query.filter_by(email=email).first()
     wrong_pass = {"password": "INVALID CREDENTIALS"}
-    user_response = {"email": user.email, "name": user.name}
+    user_response = {"email": user.email, "name": user.name, "userid": user.id}
 
     if not user or not check_password_hash(user.password, password):
         return make_response(jsonify(wrong_pass), 401)

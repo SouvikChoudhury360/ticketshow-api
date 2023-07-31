@@ -38,7 +38,6 @@ def get_shows():
 
 # GET SINGLE SHOW
 @main.route('/show/<int:show_id>', methods=['GET'])
-@login_required
 def get_show(show_id):
     thisshow = show.query.get_or_404(show_id)
     show_output = {"id": thisshow.id, "title": thisshow.title, "ticket_price": thisshow.ticket_price, "tags": thisshow.tags, "starting_time": thisshow.starting_time, "ending_time": thisshow.ending_time, "seats_left": thisshow.capacity}
@@ -46,7 +45,6 @@ def get_show(show_id):
 
 # GET SINGLE VENUE 
 @main.route('/venue/<int:venue_id>', methods=['GET'])
-@login_required
 def get_venue(venue_id):
     thisvenue = venue.query.get_or_404(venue_id)
     venue_output = {"address": thisvenue.address, "name": thisvenue.name, "capacity": thisvenue.capacity, "id": thisvenue.id}
@@ -54,7 +52,6 @@ def get_venue(venue_id):
 
 # CREATE A VENUE
 @main.route('/createVenue', methods=['POST'])
-@login_required
 def createVenue_post():
     req = request.json
     address = req['address']
@@ -68,7 +65,6 @@ def createVenue_post():
 
 # UPDATE A VENUE 
 @main.route("/venue/<int:venue_id>/edit", methods=['PATCH'])
-@login_required
 def editVenue(venue_id):
     thisvenue = venue.query.get_or_404(venue_id)
     req = request.json
@@ -84,7 +80,6 @@ def editVenue(venue_id):
 
 # DELETE A VENUE
 @main.route("/venue/<int:venue_id>/delete", methods=['DELETE'])
-@login_required
 def deleteVenue(venue_id):
     thisvenue = venue.query.get_or_404(venue_id)
     shows_list = show.query.all()
@@ -102,7 +97,6 @@ def deleteVenue(venue_id):
 
 # CREATE A SHOW
 @main.route('/<int:venue_id>/createShow', methods=['POST'])
-@login_required
 def createShow(venue_id):
     req = request.json
     thisvenue = venue.query.filter_by(id=venue_id).first()
@@ -119,7 +113,6 @@ def createShow(venue_id):
 
 # DELETE A SHOW
 @main.route("/show/<int:show_id>/delete", methods=['DELETE'])
-@login_required
 def deleteShow(show_id):
     thisshow = show.query.get_or_404(show_id)
     bookings_list = bookings.query.all()
@@ -133,7 +126,6 @@ def deleteShow(show_id):
 
 # UPDATE A SHOW 
 @main.route("/show/<int:show_id>/edit", methods=['PATCH'])
-@login_required
 def editShow(show_id):
     thisshow = show.query.get_or_404(show_id)
     req = request.json
@@ -153,11 +145,11 @@ def editShow(show_id):
 
 # CREATE A BOOKING 
 @main.route('/booking/<int:show_id>', methods=['POST'])
-@login_required
 def booking_post(show_id):
     req = request.json
     count = req['count']
-    new_booking = bookings(show_id=show_id, count=int(count), user_id=int(current_user.id))
+    userid = req['userid']
+    new_booking = bookings(show_id=show_id, count=int(count), user_id=int(userid))
     thisshow = show.query.get_or_404(show_id)
     if thisshow.capacity < int(count) :
         return make_response(404)
@@ -168,15 +160,14 @@ def booking_post(show_id):
 
 
 # GET ALL BOOKING FOR USER
-@main.route('/mybookings', methods= ['GET'])
-@login_required
-def mybookings():
-    bookingsList = bookings.query.filter_by(user_id=current_user.id)
+@main.route('/mybookings/<int:userid>', methods= ['GET'])
+def mybookings(userid):
+    bookingsList = bookings.query.filter_by(user_id=userid)
     showlist = {}
     for thisbooking in bookingsList:
         thisshow = show.query.filter_by(id=thisbooking.show_id).first()
         thisvenue = venue.query.filter_by(id=thisshow.venue_id).first()
-        thisrating = ratings.query.filter((ratings.user_id==current_user.id) & (ratings.show_id == thisshow.id)).count()
+        thisrating = ratings.query.filter((ratings.user_id==userid) & (ratings.show_id == thisshow.id)).count()
         rated = False
         if thisrating > 0:
             rated = True
@@ -186,11 +177,11 @@ def mybookings():
 
 # ADD A REVIEW
 @main.route('/rating/<int:show_id>', methods=['POST'])
-@login_required
 def rating_post(show_id):
     req = request.json
     rating = req['rating']
-    new_rating = ratings(show_id=show_id, rating=int(rating), user_id=int(current_user.id))
+    userid = req['userid']
+    new_rating = ratings(show_id=show_id, rating=int(rating), user_id=int(userid))
     db.session.add(new_rating)
     db.session.commit()
     return make_response(jsonify({"rating": rating}))
@@ -198,7 +189,6 @@ def rating_post(show_id):
 
 # ANALYTICS
 @main.route('/analytics/<int:show_id>', methods=['GET'])
-@login_required
 def analytics(show_id):
     thisshow = show.query.filter_by(id=show_id).first()
     ratings_list = ratings.query.all()
