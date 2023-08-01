@@ -171,7 +171,7 @@ def mybookings(userid):
         rated = False
         if thisrating > 0:
             rated = True
-        showlist[thisbooking.id] = {"show": thisshow.title, "starting_time": thisshow.starting_time, "ending_time": thisshow.ending_time, "ticket_count": thisbooking.count, "total_cost": thisbooking.count * thisshow.ticket_price, "venue": thisvenue.name, "address": thisvenue.address, "israted": rated}
+        showlist[thisbooking.id] = {"show_id": thisshow.id,"show": thisshow.title, "starting_time": thisshow.starting_time, "ending_time": thisshow.ending_time, "ticket_count": thisbooking.count, "total_cost": thisbooking.count * thisshow.ticket_price, "venue": thisvenue.name, "address": thisvenue.address, "israted": rated}
     return make_response(jsonify(showlist))
 
 
