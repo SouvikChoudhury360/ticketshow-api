@@ -198,21 +198,13 @@ def analytics(show_id):
             rating_list[rating.rating-1] += 1
     return make_response(jsonify({"ratings": rating_list, "show": thisshow.title}))
 
-###################################################################################################################
-
-# SEARCH DEFAULT
-@main.route('/search', methods=['GET'])
-@login_required
-def search_landing_screen():
-    show_list = show.query.all()
-    return render_template('search_shows.html',shows= show_list)
 
 
 # SEARCH ACTUAL
 @main.route('/search/shows', methods=['GET', 'POST'])
-@login_required
 def search_shows():
-    search_text = request.form['show_search']
+    req = request.json
+    search_text = req['show_search']
     search = "%{}%".format(search_text)
     showlist = show.query.filter(show.title.like(search)).all()
     showtags = show.query.filter(show.tags.like(search)).all()
@@ -224,4 +216,16 @@ def search_shows():
                 exists = True
         if exists == False:
             finallist.append(newshow)
-    return render_template('search_shows.html',shows= finallist)
+    output = []
+    for thisshow in finallist:
+        temp = {
+            "id": thisshow.id,
+            "title": thisshow.title,
+            "starting_time": thisshow.starting_time,
+            "ending_time": thisshow.ending_time,
+            "capacity": thisshow.capacity,
+            "ticket_price": thisshow.ticket_price,
+            "tags": thisshow.tags, 
+        }
+        output.append(temp)
+    return make_response(output)
