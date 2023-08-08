@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, make_response, jsonify
 from flask_login import login_required, current_user
-from .models import venue, show, bookings, ratings
+from .models import venue, show, bookings, ratings, booking_time, User
 from datetime import datetime
 from . import db
 
@@ -156,6 +156,10 @@ def booking_post(show_id):
     thisshow.capacity = thisshow.capacity - int(count)
     db.session.add(new_booking)
     db.session.commit()
+    current_date = datetime.today()
+    new_booking_time = booking_time(booking_time= current_date, user_id = int(userid))
+    db.session.add(new_booking_time)
+    db.session.commit()
     return make_response(jsonify({"booking_id": new_booking.id, "tickets_confirmed": new_booking.count}))
 
 
@@ -174,6 +178,24 @@ def mybookings(userid):
         showlist[thisbooking.id] = {"show_id": thisshow.id,"show": thisshow.title, "starting_time": thisshow.starting_time, "ending_time": thisshow.ending_time, "ticket_count": thisbooking.count, "total_cost": thisbooking.count * thisshow.ticket_price, "venue": thisvenue.name, "address": thisvenue.address, "israted": rated}
     return make_response(jsonify(showlist))
 
+@main.route('/reminder', methods = ['GET'])
+def reminder():
+    booked = booking_time.query.all()
+    allusers = User.query.all()
+    output = []
+    for thisuser in allusers:
+        flag = False
+        for booker in booked:
+            if booker.user_id == thisuser.id:
+                flag = True
+        if flag == False:
+            temp = {
+                "email": thisuser.email,
+                "name": thisuser.name,
+                "id": thisuser.id 
+            }
+            output.append(temp)
+    return make_response(output)
 
 # ADD A REVIEW
 @main.route('/rating/<int:show_id>', methods=['POST'])

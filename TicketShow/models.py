@@ -35,3 +35,8 @@ class ratings(db.Model):
     user_id = db.Column(db.Integer)
     show_id = db.Column(db.Integer)
     rating = db.Column(db.Integer)
+
+class booking_time(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    booking_time = db.Column(db.Date)
+    user_id = db.Column(db.Integer)
