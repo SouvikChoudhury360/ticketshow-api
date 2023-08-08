@@ -180,7 +180,8 @@ def mybookings(userid):
 
 @main.route('/reminder', methods = ['GET'])
 def reminder():
-    booked = booking_time.query.all()
+    current_date = datetime.today()
+    booked = booking_time.query.filter_by(booking_time = current_date.strftime("%Y-%m-%d"))
     allusers = User.query.all()
     output = []
     for thisuser in allusers:
