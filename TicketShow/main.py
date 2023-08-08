@@ -190,12 +190,7 @@ def reminder():
             if booker.user_id == thisuser.id:
                 flag = True
         if flag == False:
-            temp = {
-                "email": thisuser.email,
-                "name": thisuser.name,
-                "id": thisuser.id 
-            }
-            output.append(temp)
+            output.append(thisuser.email)
     return make_response(output)
 
 # ADD A REVIEW
