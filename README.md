@@ -2,6 +2,8 @@
 
 <h2> An online show tickets booking web application </h2>
 
+<a href="https://github.com/SouvikChoudhury360/ticketshow_email"> Link to Source Code for job scheduling with Celery and Redis </a>
+
  <h2 align="center"> Video Demonstration </h2> 
  
  
